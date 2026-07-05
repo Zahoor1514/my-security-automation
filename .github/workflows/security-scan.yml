@@ -16,9 +16,7 @@ jobs:
 
       - name: Execute Security Scanner
         env:
-          # Dynamic Inputs (Yahan aap kisi bhi domain ka naam badal sakte hain)
           SCAN_TARGET: "https://example.com"
-          # Securely connecting Webhook Secret from GitHub Vault
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python scanner.py
 
