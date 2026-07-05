@@ -19,18 +19,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Execute Security Scanner
+      - name: Execute Self-Healing Scanner
         run: python scanner.py
-        continue-on-error: true # Yeh line script fail hone par bhi workflow ko aage chalne degi
 
-      - name: Upload Report Data Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Security-Scan-Report
-          path: public/
-
-      - name: Deploy Dashboard to GitHub Pages
+      - name: Deploy Self-Healed Dashboard
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
