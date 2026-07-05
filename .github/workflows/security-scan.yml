@@ -2,6 +2,9 @@ name: Security Automation Core
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
   automated-scan:
     runs-on: ubuntu-latest
@@ -15,14 +18,11 @@ jobs:
           python-version: '3.10'
 
       - name: Execute Security Scanner
-        env:
-          SCAN_TARGET: "https://example.com"
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python scanner.py
 
-      - name: Upload Security Report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Deploy Dashboard to GitHub Pages
+        if: always() # Scan fail bhi ho tab bhi report live web par publish ho
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: Security-Scan-Report
-          path: security_report.json
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
