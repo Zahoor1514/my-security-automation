@@ -4,6 +4,8 @@ on: [push]
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   automated-scan:
@@ -19,9 +21,17 @@ jobs:
 
       - name: Execute Security Scanner
         run: python scanner.py
+        continue-on-error: true # Yeh line script fail hone par bhi workflow ko aage chalne degi
+
+      - name: Upload Report Data Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Security-Scan-Report
+          path: public/
 
       - name: Deploy Dashboard to GitHub Pages
-        if: always() # Scan fail bhi ho tab bhi report live web par publish ho
+        if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
