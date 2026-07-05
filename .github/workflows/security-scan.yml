@@ -1,0 +1,19 @@
+name: Security Automation Core
+
+on: [push]
+
+jobs:
+  automated-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+      uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+      - name: Execute Security Scanner
+      run: |
+        python scanner.py
