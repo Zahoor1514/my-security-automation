@@ -1,0 +1,24 @@
+{
+    "target": "https://example.com",
+    "status": "Completed",
+    "vulnerabilities": [
+        {
+            "title": "Missing X-Frame-Options Header",
+            "severity": "HIGH",
+            "desc": "Clickjacking protection missing. Site can be embedded in malicious iframes.",
+            "fix": "Add 'X-Frame-Options: SAMEORIGIN' to web server config."
+        },
+        {
+            "title": "Missing Content-Security-Policy (CSP)",
+            "severity": "HIGH",
+            "desc": "XSS mitigation missing. Malicious scripts can execute in user browsers.",
+            "fix": "Define a strict Content-Security-Policy header."
+        },
+        {
+            "title": "Missing X-Content-Type-Options",
+            "severity": "MEDIUM",
+            "desc": "MIME-sniffing protection disabled.",
+            "fix": "Add 'X-Content-Type-Options: nosniff' header."
+        }
+    ]
+}
