@@ -1,46 +1,65 @@
 import urllib.request
 import sys
+import json
 
-# Is baar hum real aur safe target check kar rahe hain
 target_url = "https://example.com"
-print(f"[+] Starting Advanced Security Headers Scan: {target_url}\n")
+print(f"[+] Launching Enterprise Security Scan: {target_url}\n")
+
+# Report Structure Initialization
+scan_results = {
+    "target": target_url,
+    "status": "Completed",
+    "vulnerabilities": []
+}
 
 try:
-    # Website par request bhej kar response headers nikalna
-    req = urllib.request.Request(target_url, headers={'User-Agent': 'DevSecOps-Scanner-v1'})
+    req = urllib.request.Request(target_url, headers={'User-Agent': 'DevSecOps-Enterprise-Scanner-v2'})
     response = urllib.request.urlopen(req)
     headers = response.info()
     
-    issues = []
-    
-    # 1. Check X-Frame-Options
-    if 'X-Frame-Options' in headers:
-        print(f"[✓] PASS: X-Frame-Options is set to ({headers['X-Frame-Options']})")
-    else:
-        print("[X] FAIL: X-Frame-Options is MISSING! (Risk: Clickjacking)")
-        issues.append("MISSING: X-Frame-Options (High Risk of Clickjacking)")
-        
-    # 2. Check Content-Security-Policy
-    if 'Content-Security-Policy' in headers:
-        print(f"[✓] PASS: Content-Security-Policy is set.")
-    else:
-        print("[X] FAIL: Content-Security-Policy is MISSING! (Risk: XSS)")
-        issues.append("MISSING: Content-Security-Policy (High Risk of XSS)")
+    # 1. Check X-Frame-Options (High Severity)
+    if 'X-Frame-Options' not in headers:
+        scan_results["vulnerabilities"].append({
+            "title": "Missing X-Frame-Options Header",
+            "severity": "HIGH",
+            "description": "Clickjacking protection is not enforced. Attackers can embed this site in an iframe.",
+            "remediation": "Add 'X-Frame-Options: DENY' or 'SAMEORIGIN' to server configuration."
+        })
 
-    # Report Generation Logic
-    if issues:
-        print(f"\n[!] Scan finished. Found {len(issues)} security issues. Generating report...")
-        with open("security_report.txt", "w") as report:
-            report.write(f"=== SECURITY SCAN REPORT FOR {target_url} ===\n")
-            for issue in issues:
-                report.write(f"- {issue}\n")
-        sys.exit(1) # Pipeline ko red karne ke liye taakay developer ko pata chale bugs hain
+    # 2. Check Content-Security-Policy (High Severity)
+    if 'Content-Security-Policy' not in headers:
+        scan_results["vulnerabilities"].append({
+            "title": "Missing Content-Security-Policy (CSP)",
+            "severity": "HIGH",
+            "description": "Cross-Site Scripting (XSS) mitigation is missing.",
+            "remediation": "Define a robust CSP header to restrict script execution sources."
+        })
+
+    # 3. Check X-Content-Type-Options (Medium/Low Severity)
+    if 'X-Content-Type-Options' not in headers:
+        scan_results["vulnerabilities"].append({
+            "title": "Missing X-Content-Type-Options",
+            "severity": "MEDIUM",
+            "description": "MIME-sniffing protection is disabled.",
+            "remediation": "Add 'X-Content-Type-Options: nosniff' header."
+        })
+
+    # Saving Results to a Professional JSON Report
+    with open("security_report.json", "w") as report_file:
+        json.dump(scan_results, report_file, indent=4)
+        
+    print(f"[!] Scan finished. JSON report generated successfully.")
+
+    # Rule-Based Pipeline Enforcement
+    high_or_critical_found = any(v["severity"] == "HIGH" for v in scan_results["vulnerabilities"])
+    
+    if high_or_critical_found:
+        print("[❌] Strict Policy Violation: HIGH severity vulnerabilities found. Failing build!")
+        sys.exit(1)
     else:
-        print("\n[✓] All core security headers are present! Website is secure.")
-        with open("security_report.txt", "w") as report:
-            report.write(f"=== SECURITY SCAN REPORT FOR {target_url} ===\n[✓] No critical issues found.")
-        sys.exit(0) # Pipeline green karne ke liye
+        print("[✓] Policy Passed: No High severity vulnerabilities found.")
+        sys.exit(0)
 
 except Exception as e:
-    print(f"[X] Network Error: {e}")
+    print(f"[X] Scan Interrupted due to Network Error: {e}")
     sys.exit(1)
