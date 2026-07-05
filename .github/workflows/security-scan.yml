@@ -16,3 +16,11 @@ jobs:
 
       - name: Execute Security Scanner
         run: python scanner.py
+
+      # Naya Step Report Save Karne Ke Liye (Yeh humesha chalega chahe scan fail ho ya pass)
+      - name: Upload Security Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Security-Scan-Report
+          path: security_report.txt

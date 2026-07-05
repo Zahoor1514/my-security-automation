@@ -6,7 +6,13 @@ print(f"[+] Scanning target: {target_url}")
 
 try:
     response = urllib.request.urlopen(target_url)
-    print(f"[✓] Target is UP. Status: {response.getcode()}")
+    print(f"[✓] Target is UP.")
 except Exception as e:
-    print(f"[X] Error scanning target: {e}")
+    error_msg = f"[X] Security Alert: Target is down or malicious. Error: {e}"
+    print(error_msg)
+    
+    # Report File Likhna
+    with open("security_report.txt", "w") as report:
+        report.write(error_msg)
+        
     sys.exit(1)
