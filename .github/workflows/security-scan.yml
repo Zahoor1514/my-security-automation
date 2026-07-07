@@ -1,12 +1,9 @@
-name: MLOps Autonomous AI Pipeline
+name: Security Automation Core
 
 on: [push]
 
-permissions:
-  contents: write
-
 jobs:
-  ai-mlops-lifecycle:
+  automated-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Codebase
@@ -17,28 +14,5 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 1. Run Data Ingestion & Validation
-        run: python data_pipeline.py
-
-      - name: 2. Execute Automated Model Training
-        run: python train_model.py
-
-      - name: 3. Verify Production Serving Inference
-        run: python serve_model.py
-
-      - name: 4. Run Continuous Observability Engine
-        run: python monitor_drift.py
-
-      - name: 5. Autonomous Weights Registry Writeback
-        run: |
-          git config --global user.name "mlops-ai-bot"
-          git config --global user.email "ai-bot@mlops.local"
-          
-          if [ -n "$(git status --porcelain models/)" ]; then
-            echo "[⚙️] New AI Weights detected! Registering model artifacts..."
-            git add models/
-            git commit -m "ai: [Autonomous Training] Registered updated financial_model.bin"
-            git push origin main
-          else
-            echo "[✓] Registry matches current feature matrix. Deployment stable."
-          fi
+      - name: Run Core Security Vulnerability Scan
+        run: python scanner.py
